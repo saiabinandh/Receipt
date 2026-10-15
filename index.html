@@ -136,6 +136,9 @@ button{font:inherit;cursor:pointer}
 .tpl-orbit .r-foot .o-tag em{font-style:normal;color:var(--o-gold-dk)}
 .tpl-orbit .r-foot .o-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--o-red);margin-right:8px;vertical-align:1px}
 .tpl-orbit .r-cont,.tpl-orbit .pgno{color:var(--o-muted)}
+.btn.drive{display:inline-flex;align-items:center;gap:8px}
+.btn.drive svg{flex:none}
+.drive-link{color:var(--focus);font-weight:600}
 #measure{position:absolute;left:-10000px;top:0;width:682px;visibility:hidden;color:#000;font-family:var(--body)}
 #measure .r-in{padding:0}
 .r-head{display:flex;justify-content:space-between;gap:24px}
@@ -213,7 +216,7 @@ a.btn{text-decoration:none;display:inline-block}
 .detail-bar .grow{flex:1}
 .detail-sheet{max-width:760px;width:100%;margin:0 auto}
 </style>
-<style>body{margin:0}img{max-width:100%}</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
 
@@ -349,6 +352,7 @@ a.btn{text-decoration:none;display:inline-block}
         <button class="btn" id="backBtn" type="button">← All receipts</button>
         <span class="grow"></span>
         <button class="btn" id="dEdit" type="button">Edit</button>
+        <button class="btn drive" id="dDrive" type="button"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8l6 10-4 7H6l-4-7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 3l6 10H2M16 3l-6 10M22 13H10l-4 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Upload to Drive again</button>
         <button class="btn primary" id="dPdf" type="button">Save as PDF</button>
         <button class="btn" id="dPng" type="button">Save as image</button>
         <button class="btn danger" id="dDelete" type="button">Delete</button>
@@ -544,6 +548,12 @@ async function snapshot(target){
   return out;
 }
 function fileName(d,ext){return "Receipt_"+(([d.client,d.date].filter(Boolean).join("_"))||"receipt").replace(/[^\w-]+/g,"_")+"."+ext}
+async function makePdf(target){
+  const canvases=await snapshot(target);
+  const {jsPDF}=window.jspdf;const pdf=new jsPDF({unit:"mm",format:"a4",orientation:"portrait"});
+  canvases.forEach((c,i)=>{if(i)pdf.addPage("a4","portrait");pdf.addImage(c.toDataURL("image/jpeg",0.95),"JPEG",0,0,210,297)});
+  return pdf.output("blob");
+}
 async function exportFile(target,d,ext,st){
   const dl={save:async({filename,data})=>{const blob=data instanceof Blob?data:new Blob([data]);const u=URL.createObjectURL(blob);
     const a=document.createElement("a");a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);return {status:"saved"}}};
@@ -583,7 +593,7 @@ function asText(d){
 function localList(){return (store.get(LOCAL_KEY)||[]).sort((a,b)=>(b.savedAt||0)-(a.savedAt||0))}
 function setStoreReady(){
   const btn=$("saveBtn"); btn.disabled=false; btn.textContent=currentId?"Update receipt":"Save receipt";
-  $("storeNote").textContent=mode==="db"?"Saved receipts are stored with this page, so they're there whenever you open it, on any device.":"Saved receipts are stored in this browser on this device. Clearing browser data removes them, so download PDFs of important receipts.";
+  $("storeNote").textContent=mode==="db"?"Saved receipts are stored with this page, so they're there whenever you open it, on any device.":"This list is kept in this browser. Every receipt you save is also uploaded as a PDF to the Orbit Receipts folder in your Google Drive.";
 }
 async function initStore(){
   let db=null;
@@ -617,6 +627,7 @@ async function saveCurrent(){
     }
     $("editingBar").hidden=false;
     status(`Saved. You'll find it under Saved receipts.`);
+    setStoreReady(); await uploadToDrive($("receipt"),d,currentId,"status","Saved. "); return;
   }catch(e){
     status(e.code==="permission_denied"?"You don't have permission to save receipts on this page. Ask the owner for edit access.":
       e.code==="quota_exceeded"?"Storage is full. Delete some old receipts and try again.":"Couldn't save the receipt. Check your connection and try again.");
@@ -737,6 +748,31 @@ if(!matchMedia("(prefers-reduced-motion: reduce)").matches){
   setInterval(()=>{const s=(performance.now()-t0)/1000;const p=n=>String(Math.floor(n)).padStart(2,"0");
     tc.textContent=`${p(s/3600)}:${p(s/60%60)}:${p(s%60)}:${p((s%1)*25)}`},40);
 }
+
+/* ---------- Google Drive (automatic) ---------- */
+const DRIVE={url:"https://script.google.com/macros/s/AKfycby1v1uGR-ruHDFdjZSEpuv5ChdffQQkuln1HafXmYQu7vCibXSngVNaR90ftOyTEQB7/exec",key:"yJ0MwK8t7hS3h4KVX1fI6bp7"};
+function blobToBase64(blob){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(",")[1]);r.onerror=()=>rej(r.error);r.readAsDataURL(blob)})}
+async function callDrive(payload){
+  const res=await fetch(DRIVE.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key:DRIVE.key,...payload})});
+  let out; try{out=await res.json()}catch(e){throw new Error("Google didn't answer correctly. Check the web app is deployed with access set to Anyone.")}
+  if(!out.ok) throw new Error(out.error==="wrong_key"?"The secret key on the site doesn't match the one in your Google script.":(out.error||"Google Drive refused the upload."));
+  return out;
+}
+function driveFileName(d,id){
+  const base=fileName(d,"pdf").replace(/\.pdf$/,"");
+  return base+(id?"_"+String(id).slice(-5):"")+".pdf";
+}
+async function uploadToDrive(target,d,id,st,prefix=""){
+  status(prefix+"Uploading to Google Drive…",st);
+  try{
+    const blob=await makePdf(target);
+    const out=await callDrive({filename:driveFileName(d,id),data:await blobToBase64(blob)});
+    $(st).innerHTML=esc(prefix)+`Uploaded to Google Drive as <strong>${esc(out.name)}</strong> in “${esc(out.folder||"Orbit Receipts")}”. <a class="drive-link" href="${esc(out.url)}" target="_blank" rel="noopener">Open in Drive</a>`;
+  }catch(e){
+    status(prefix+"Couldn't upload to Google Drive. "+(e.message&&!/Failed to fetch/i.test(e.message)?e.message:"Check your internet connection and try “Upload to Drive again” from Saved receipts."),st);
+  }
+}
+$("dDrive").onclick=()=>{const r=saved.find(x=>x.id===viewingId);if(r)uploadToDrive($("dReceipt"),r,r.id,"dStatus")};
 
 /* ---------- start ---------- */
 newReceipt();
