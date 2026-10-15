@@ -8,7 +8,7 @@
 
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=DM+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: editor panel (form) on the left, live paper receipt on the right like a program monitor; stacks on phones. */
 :root{
@@ -91,6 +91,51 @@ button{font:inherit;cursor:pointer}
 .r-end{margin-top:auto;display:flex;flex-direction:column;gap:26px}
 .r-cont{margin-top:auto;text-align:right;font-size:11.5px;color:var(--paper-muted);font-style:italic}
 .pgno{position:absolute;bottom:14px;right:56px;font:500 10.5px var(--mono);color:var(--paper-muted)}
+/* ---------- Template picker ---------- */
+.tpl-pick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:0 18px 18px}
+.tpl-opt{position:relative;display:flex;flex-direction:column;gap:8px;padding:10px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;background:var(--field);font-size:13px;font-weight:600;color:var(--ink)}
+.tpl-opt input{position:absolute;opacity:0;pointer-events:none}
+.tpl-opt:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent)}
+.tpl-opt:has(input:focus-visible){outline:2px solid var(--focus);outline-offset:2px}
+.tpl-opt small{font-weight:400;color:var(--muted);font-size:12px}
+.tpl-thumb{height:62px;border-radius:6px;overflow:hidden;background:#fff;border:1px solid #e3e5ea;display:flex;flex-direction:column}
+.tpl-thumb .band{height:8px;background:repeating-linear-gradient(-55deg,#16181d 0 6px,#fff 6px 12px)}
+.tpl-thumb .ln{height:5px;border-radius:3px;background:#e3e5ea;margin:6px 8px 0}
+.tpl-thumb .ln.s{width:40%}
+.tpl-thumb.orbit .band{height:22px;background:#0E0E0E;display:flex;align-items:center;gap:5px;padding-left:7px}
+.tpl-thumb.orbit .band i{width:11px;height:11px;border-radius:50%;border:2.5px solid #C9A35A;border-top-color:transparent;transform:rotate(45deg)}
+.tpl-thumb.orbit .band b{font:800 9px "Syne",sans-serif;color:#F3EEE5}
+.tpl-thumb.orbit .ln.g{background:#C9A35A;width:30%}
+.tbadge{display:inline-block;font:600 10px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin-left:8px;vertical-align:1px}
+.tbadge.orbit{background:#0E0E0E;color:#C9A35A;border-color:#0E0E0E}
+
+/* ---------- Orbit Studios receipt template ---------- */
+.tpl-orbit{--o-ink:#0E0E0E;--o-gold:#C9A35A;--o-gold-dk:#8E6B26;--o-red:#E0343F;--o-muted:#6E6962;--o-line:#E6E1D8;font-family:"Inter",system-ui,sans-serif;color:var(--o-ink)}
+.tpl-orbit .slate{height:18px;background:linear-gradient(90deg,var(--o-ink) 0 82%,var(--o-gold) 82% 96%,var(--o-red) 96%)}
+.tpl-orbit .o-logo{display:flex;align-items:center;gap:14px}
+.tpl-orbit .o-mark{width:58px;height:58px;border-radius:14px;background:var(--o-ink);display:grid;place-items:center;flex:none}
+.tpl-orbit .o-word b{display:block;font-family:"Syne",sans-serif;font-weight:800;font-size:34px;letter-spacing:-1.5px;line-height:.9;color:var(--o-ink)}
+.tpl-orbit .o-word small{display:block;font-family:"Syne",sans-serif;font-weight:600;font-size:9.5px;letter-spacing:6px;margin-top:5px;color:var(--o-ink)}
+.tpl-orbit .r-small{color:var(--o-muted);margin-top:10px}
+.tpl-orbit .r-title .word{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:12px;letter-spacing:.24em;color:var(--o-gold-dk)}
+.tpl-orbit .r-title .num{font-family:"Syne",sans-serif;font-weight:700;font-size:22px;letter-spacing:-.01em}
+.tpl-orbit .r-meta{border-color:var(--o-line);background:#FAF8F4;border-radius:10px;padding:16px 18px;border:1px solid var(--o-line)}
+.tpl-orbit .r-k{font-family:"JetBrains Mono",monospace;color:var(--o-gold-dk);font-weight:500;letter-spacing:.14em}
+.tpl-orbit .r-v strong{font-family:"Syne",sans-serif;font-weight:700;font-size:15.5px}
+.tpl-orbit .r-items th{font-family:"JetBrains Mono",monospace;font-weight:500;color:var(--o-muted);border-bottom:2px solid var(--o-ink)}
+.tpl-orbit .r-items th.n{font-family:"JetBrains Mono",monospace}
+.tpl-orbit .r-items td{border-bottom-color:var(--o-line)}
+.tpl-orbit .r-items .n{font-family:"JetBrains Mono",monospace}
+.tpl-orbit .r-items .unit{color:var(--o-muted)}
+.tpl-orbit .totals .row span:last-child{font-family:"JetBrains Mono",monospace}
+.tpl-orbit .totals .due{background:var(--o-ink);border-radius:999px;padding:11px 18px;font-family:"Syne",sans-serif}
+.tpl-orbit .totals .due span:last-child{color:var(--o-gold)}
+.tpl-orbit .r-sign span{border-top-color:var(--o-ink)}
+.tpl-orbit .r-foot{border-top:1px solid var(--o-line);color:var(--o-muted);align-items:center}
+.tpl-orbit .r-foot .o-tag{font-family:"Syne",sans-serif;font-weight:700;font-size:13px;color:var(--o-ink)}
+.tpl-orbit .r-foot .o-tag em{font-style:normal;color:var(--o-gold-dk)}
+.tpl-orbit .r-foot .o-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--o-red);margin-right:8px;vertical-align:1px}
+.tpl-orbit .r-cont,.tpl-orbit .pgno{color:var(--o-muted)}
 #measure{position:absolute;left:-10000px;top:0;width:682px;visibility:hidden;color:#000;font-family:var(--body)}
 #measure .r-in{padding:0}
 .r-head{display:flex;justify-content:space-between;gap:24px}
@@ -194,6 +239,17 @@ a.btn{text-decoration:none;display:inline-block}
     <div class="grid">
       <form class="panel" id="form" autocomplete="off">
         <details open>
+          <summary>Template</summary>
+          <div class="tpl-pick" role="radiogroup" aria-label="Receipt template">
+            <label class="tpl-opt"><input type="radio" name="tpl" id="tplOrbit" value="orbit" checked>
+              <span class="tpl-thumb orbit" aria-hidden="true"><span class="band"><i></i><b>orbit</b></span><span class="ln g"></span><span class="ln"></span><span class="ln s"></span></span>
+              Orbit Studios<small>Your brand: black, gold and the orbit logo</small></label>
+            <label class="tpl-opt"><input type="radio" name="tpl" id="tplClassic" value="classic">
+              <span class="tpl-thumb" aria-hidden="true"><span class="band"></span><span class="ln"></span><span class="ln"></span><span class="ln s"></span></span>
+              Classic<small>Clapper-stripe design, any studio name</small></label>
+          </div>
+        </details>
+        <details open>
           <summary>Your studio</summary>
           <div class="sec">
             <label class="full">Studio / business name<input id="bizName" type="text"></label>
@@ -252,8 +308,7 @@ a.btn{text-decoration:none;display:inline-block}
               <option value="EUR">€ Euro</option><option value="GBP">£ British Pound</option><option value="AED">AED Dirham</option>
             </select></label>
             <label>Discount<div class="inline"><input id="disc" type="number" min="0" step="any" style="flex:1"><select id="discType" style="width:auto"><option value="pct">%</option><option value="amt">amount</option></select></div></label>
-            <label>Amount paid<input id="paid" type="number" min="0" step="any"></label>
-            <label>Payment method<select id="method"><option value="">Select</option><option>UPI</option><option>Cash</option><option>Bank transfer</option><option>Card</option><option>Cheque</option><option>PayPal</option></select></label>
+            <label>Payment method<select id="method"><option value="">Select</option><option>UPI</option><option>Cash</option><option>Bank transfer</option><option>Card</option><option>Cheque</option><option>PayPal</option><option>Wise</option></select></label>
             <label class="full">Transaction / reference ID<input id="txn" type="text" class="mono"></label>
             <label class="full">Notes for the client<textarea id="notes" rows="3"></textarea></label>
           </div>
@@ -339,7 +394,7 @@ const HINTS = {
   bizName:"e.g. Frame & Fade Studio", bizPhone:"e.g. +91 98470 12345", bizEmail:"e.g. hello@yourstudio.in",
   bizAddr:"e.g. 2nd Floor, Market Road, Thodupuzha, Kerala 685584", bizUpi:"e.g. yourname@okaxis",
   cName:"e.g. Anjali & Rahul", cContact:"e.g. +91 94470 55678", cAddr:"e.g. Kochi, Kerala",
-  pTitle:"e.g. Wedding Highlights", disc:"0", paid:"e.g. 10000", txn:"e.g. UPI/428193650271",
+  pTitle:"e.g. Wedding Highlights", disc:"0", txn:"e.g. UPI/428193650271",
   notes:"e.g. Final export is shared via Google Drive link."
 };
 for(const k in HINTS){if($(k))$(k).placeholder=HINTS[k]}
@@ -348,20 +403,23 @@ for(const k in HINTS){if($(k))$(k).placeholder=HINTS[k]}
 function formData(){
   const v=id=>$(id).value.trim();
   const biz={}; BIZ_FIELDS.forEach(k=>biz[k]=v(k));
-  return {biz,date:v("rDate"),client:v("cName"),contact:v("cContact"),addr:v("cAddr"),title:v("pTitle"),type:$("pType").value,
-    cur:$("cur").value,disc:numv("disc"),discType:$("discType").value,paid:numv("paid"),method:$("method").value,txn:v("txn"),notes:v("notes"),
+  return {tpl:currentTpl(),biz,date:v("rDate"),client:v("cName"),contact:v("cContact"),addr:v("cAddr"),title:v("pTitle"),type:$("pType").value,
+    cur:$("cur").value,disc:numv("disc"),discType:$("discType").value,method:$("method").value,txn:v("txn"),notes:v("notes"),
     items:items.filter(it=>it.d||it.r).map(it=>({d:it.d,u:it.u,q:it.q,r:it.r}))};
 }
+function currentTpl(){return $("tplClassic").checked?"classic":"orbit"}
+function setTpl(t){$(t==="classic"?"tplClassic":"tplOrbit").checked=true; store.set("cutroom_tpl",t)}
 function calc(d){
   const sub=(d.items||[]).reduce((s,it)=>s+(it.q||0)*(it.r||0),0);
   const disc=Math.min(sub,d.discType==="pct"?sub*(d.disc||0)/100:(d.disc||0));
   return {sub,disc,total:sub-disc,paid:d.paid||0};
 }
 function loadForm(d){
+  setTpl(d.tpl||"classic");
   BIZ_FIELDS.forEach(k=>$(k).value=(d.biz&&d.biz[k])||"");
   const map={rDate:"date",cName:"client",cContact:"contact",cAddr:"addr",pTitle:"title",pType:"type",cur:"cur",discType:"discType",method:"method",txn:"txn",notes:"notes"};
   for(const k in map)$(k).value=d[map[k]]??"";
-  $("disc").value=d.disc||""; $("paid").value=d.paid||"";
+  $("disc").value=d.disc||"";
   if(!$("cur").value)$("cur").value="INR"; if(!$("discType").value)$("discType").value="pct";
   items=(d.items||[]).map(x=>({...x})); if(!items.length)items=[{d:"",u:"per video",q:1,r:0}];
   renderItems(); render();
@@ -392,7 +450,14 @@ function layout(d,target){
   const rows=(d.items||[]).map(it=>`<tr><td>${esc(it.d)}<span class="unit">${esc(it.u)}</span></td>
       <td class="n">${it.q}</td><td class="n">${money(it.r,cur)}</td><td class="n">${money(it.q*it.r,cur)}</td></tr>`);
   const discLbl=d.discType==="pct"&&d.disc?`Discount (${d.disc}%)`:"Discount";
-  const head=`<div class="r-head">
+  const orbit=(d.tpl||"classic")==="orbit";
+  const contact=esc([b.bizAddr,[b.bizPhone,b.bizEmail].filter(Boolean).join(" · ")].filter(Boolean).join("\n"));
+  const head=orbit?`<div class="r-head">
+      <div><div class="o-logo"><div class="o-mark"><svg width="40" height="40" viewBox="0 0 120 120" aria-hidden="true"><path d="M78.71 17.98 A46 46 0 1 0 102.02 41.29" fill="none" stroke="#C9A35A" stroke-width="13"/><circle cx="92.53" cy="27.47" r="10" fill="#E0343F"/></svg></div>
+        <div class="o-word"><b>orbit</b><small>STUDIOS</small></div></div>
+        ${contact?`<div class="r-small">${contact}</div>`:""}</div>
+      <div class="r-title"><div class="word">Order Receipt</div><div class="num">${fmtDate(d.date)}</div></div>
+    </div>`:`<div class="r-head">
       <div class="r-logo">${b.bizName?`<div class="mark">${esc(initials(b.bizName))}</div>`:""}
         <div><div class="r-biz">${esc(b.bizName)}</div>
         <div class="r-small">${esc([b.bizAddr,[b.bizPhone,b.bizEmail].filter(Boolean).join(" · ")].filter(Boolean).join("\n"))}</div></div></div>
@@ -414,13 +479,13 @@ function layout(d,target){
         <div class="row"><span>Subtotal</span><span>${money(t.sub,cur)}</span></div>
         ${t.disc?`<div class="row"><span>${discLbl}</span><span>− ${money(t.disc,cur)}</span></div>`:""}
         <div class="row due"><span>Total</span><span>${money(t.total,cur)}</span></div>
-        <div class="row"><span>Amount paid</span><span>${money(t.paid,cur)}</span></div>
       </div>
     </div>`;
   const end=`<div class="r-end"><div class="r-sign"><div><img class="sig" src="${SIG}" alt="Signature"><span>Authorised signatory</span></div></div>
-    <div class="r-foot"><span>Thank you for trusting us with your footage.</span></div></div>`;
+    <div class="r-foot">${orbit?`<span class="o-tag"><span class="o-dot"></span>Your story's <em>best cut</em> starts here.</span><span>Thank you for choosing Orbit Studios.</span>`:`<span>Thank you for trusting us with your footage.</span>`}</div></div>`;
 
   const m=$("measure");
+  m.className=orbit?"tpl-orbit":"";
   m.innerHTML=`<div class="r-in">${head}${meta}${table(rows)}${bottom}<div>${end.replace('class="r-end"','class="r-end" style="margin-top:0"')}</div></div>`;
   const kids=m.firstElementChild.children;
   const hHead=kids[0].offsetHeight, hMeta=kids[1].offsetHeight, tbl=kids[2];
@@ -441,7 +506,7 @@ function layout(d,target){
   });
   put(bottom+end,hFinal);
   const n=pages.length;
-  target.innerHTML=pages.map((pg,i)=>`<div class="sheet"><div class="slate"></div><div class="r-in">${
+  target.innerHTML=pages.map((pg,i)=>`<div class="sheet${orbit?" tpl-orbit":""}"><div class="slate"></div><div class="r-in">${
       pg.map(x=>Array.isArray(x)?table(x):x).join("")}${i<n-1?`<div class="r-cont">Continued on next page →</div>`:""}</div>${
       n>1?`<div class="pgno">Page ${i+1} of ${n}</div>`:""}</div>`).join("");
   target.dataset.pages=n;
@@ -509,7 +574,7 @@ function asText(d){
   const L=[`${d.biz.bizName} — ORDER RECEIPT`,`Date: ${fmtDate(d.date)}`,`Client: ${d.client}`,`Project: ${d.title}${d.type?" ("+d.type+")":""}`,""];
   d.items.forEach(it=>L.push(`${it.d} (${it.q} × ${money(it.r,c)} ${it.u}) = ${money(it.q*it.r,c)}`));
   L.push("",`Subtotal: ${money(t.sub,c)}`); if(t.disc)L.push(`Discount: −${money(t.disc,c)}`);
-  L.push(`Total: ${money(t.total,c)}`,`Paid${d.method?" ("+d.method+(d.txn?", "+d.txn:"")+")":""}: ${money(t.paid,c)}`);
+  L.push(`Total: ${money(t.total,c)}`); if(d.method)L.push(`Payment: ${d.method}${d.txn?", "+d.txn:""}`);
   if(d.biz.bizUpi)L.push(`UPI: ${d.biz.bizUpi}`); if(d.notes)L.push("",d.notes);
   return L.join("\n");
 }
@@ -582,7 +647,7 @@ function renderList(){
   $("list").innerHTML=`<div class="lrow lhead"><span>Date</span><span>Client &amp; project</span><span class="num-col">Total</span><span></span></div>`+
     list.map(r=>`<div class="lrow" data-id="${esc(r.id)}" tabindex="0" role="button" aria-label="Open receipt for ${esc(r.client||"client")}">
       <span class="ldate mono">${fmtDate(r.date)||"—"}</span>
-      <span class="lmain"><strong>${esc(r.client)||"<em>No client name</em>"}</strong><span>${esc([r.title,r.type].filter(Boolean).join(" · "))||(r.items||[]).length+" service(s)"}</span></span>
+      <span class="lmain"><strong>${esc(r.client)||"<em>No client name</em>"}<span class="tbadge${r.tpl==="orbit"?" orbit":""}">${r.tpl==="orbit"?"Orbit":"Classic"}</span></strong><span>${esc([r.title,r.type].filter(Boolean).join(" · "))||(r.items||[]).length+" service(s)"}</span></span>
       <span class="num-col mono">${money(r.total,r.cur)}</span>
       <span class="lact"><button class="btn small" data-act="view" type="button">View</button><button class="btn small" data-act="edit" type="button">Edit</button></span>
     </div>`).join("");
@@ -638,11 +703,16 @@ addEventListener("hashchange",route);
 /* ---------- create page actions ---------- */
 function newReceipt(){
   currentId=null;
-  ["cName","cContact","cAddr","pTitle","pType","txn","disc","paid","notes","method"].forEach(k=>$(k).value="");
+  ["cName","cContact","cAddr","pTitle","pType","txn","disc","notes","method"].forEach(k=>$(k).value="");
   $("rDate").value=today();
   items=[{d:"",u:"per video",q:1,r:0}]; renderItems(); render();
   $("editingBar").hidden=true; if(mode!=="pending")setStoreReady();
 }
+document.querySelectorAll('input[name="tpl"]').forEach(r=>r.addEventListener("change",()=>{
+  const t=currentTpl(); store.set("cutroom_tpl",t);
+  if(t==="orbit"&&!$("bizName").value.trim()){$("bizName").value="Orbit Studios";if(!$("bizEmail").value.trim())$("bizEmail").value="saiabinandh924@gmail.com"}
+  render(); status(t==="orbit"?"Using the Orbit Studios template.":"Using the Classic template.");
+}));
 $("saveBtn").onclick=saveCurrent;
 $("newBtn").onclick=()=>{newReceipt();status("Started a new receipt. Your studio details are kept.")};
 $("cancelEdit").onclick=()=>{newReceipt();status("Started a new receipt. The saved one is unchanged.")};
@@ -671,7 +741,10 @@ if(!matchMedia("(prefers-reduced-motion: reduce)").matches){
 /* ---------- start ---------- */
 newReceipt();
 const savedBiz=store.get("cutroom_biz");
-if(savedBiz){for(const k in savedBiz)if($(k))$(k).value=savedBiz[k];render()}
+if(savedBiz){for(const k in savedBiz)if($(k))$(k).value=savedBiz[k]}
+setTpl(store.get("cutroom_tpl")||"orbit");
+if(currentTpl()==="orbit"&&!$("bizName").value.trim()){$("bizName").value="Orbit Studios";if(!$("bizEmail").value.trim())$("bizEmail").value="saiabinandh924@gmail.com"}
+render();
 route();
 initStore();
 document.fonts&&document.fonts.ready.then(()=>{render();if(viewingId)showDetail(viewingId,true)});
